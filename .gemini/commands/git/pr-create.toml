@@ -1,0 +1,35 @@
+# File: .gemini/commands/pr.toml
+description = "Create PR following project template"
+
+prompt = """
+# Create Pull Request
+
+Analyze current branch changes and create a Pull Request linked to issue #{{args}} and following project PR template.
+
+## User Input
+Issue Number: {{args}}
+
+## Context
+
+PR Template:
+!{cat .github/pull_request_template.md}
+
+Current Branch:
+!{git branch --show-current}
+
+Git Status:
+!{git status}
+
+Changes:
+!{git diff HEAD}
+
+Commit History:
+!{git log --oneline -10}
+
+Diff from Main:
+!{git diff main...HEAD}
+
+## Instructions
+
+Follow project PR template and conventions. Respond and work in Korean.
+"""
