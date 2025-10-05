@@ -3,6 +3,7 @@ bootJar {
 }
 
 dependencies {
+    implementation project(':modules:common')
     implementation project(':modules:user')
     implementation project(':modules:file')
     implementation project(':modules:document')

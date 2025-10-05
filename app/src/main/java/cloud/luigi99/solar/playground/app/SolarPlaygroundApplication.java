@@ -1,4 +1,4 @@
-package cloud.luigi99.solar.playground;
+package cloud.luigi99.solar.playground.app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
