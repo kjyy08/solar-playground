@@ -1,7 +1,5 @@
 # Solar Playground 개발 가이드라인
 
-안녕하세요! 최신 Java와 Spring Boot에 능숙한 백엔드 전문가로서, 제시해주신 정보를 바탕으로 성공적인 'Solar Playground' 프로젝트 개발을 위한 가이드라인을 제시해 드립니다.
-
 ## 1. 개발 가이드라인
 
 이 문서는 프로젝트의 성공적인 완수를 위해 각 개발 단계를 정의하고, Spring Modulith를 활용한 모듈러 모놀리식 아키텍처의 이점을 극대화하는 데 초점을 맞춥니다.
@@ -102,55 +100,91 @@ Gemini Code Assistant를 활용하면 반복적인 작업을 자동화하고 복
 
 ---
 
-## 3. 프로젝트 패키지 구조 (Spring Modulith 기반)
+## 3. 프로젝트 구조 (Gradle 멀티 모듈 + Spring Modulith)
 
-모듈러 모놀리식 아키텍처의 핵심은 **기능(도메인) 중심의 패키지 구조**입니다. 계층 중심(`controller`, `service`, `repository`)이 아닌, 각 모듈이 독립적인 작은 애플리케이션처럼 구성됩니다.
+본 프로젝트는 **Gradle 멀티 모듈 구조**와 **Spring Modulith**를 결합하여 모듈러 모놀리스 아키텍처를 구현합니다. 각 도메인은 물리적으로 분리된 Gradle 서브프로젝트로 관리되며, 빌드 시스템 레벨에서 모듈 간 의존성이 명확하게 관리됩니다.
+
+### 프로젝트 루트 구조
 
 ```
-C:\...\solar-playground\src\main\java\cloud\luigi99\solar_playground\
+solar-playground/
 │
-├── SolarPlaygroundApplication.java   // 애플리케이션 메인
+├── app/                              // 🚀 메인 애플리케이션 모듈
+│   ├── build.gradle
+│   └── src/main/java/
+│       └── cloud/luigi99/solar/playground/
+│           ├── SolarPlaygroundApplication.java
+│           └── config/               // 전역 설정 (Security, Web, etc.)
+│               ├── SecurityConfig.java
+│               └── WebConfig.java
 │
-├── config/                           // 전역 설정 (Security, Web, etc.)
-│   ├── SecurityConfig.java
-│   └── WebConfig.java
+├── modules/                          // 📦 도메인 모듈들
+│   │
+│   ├── user/                         // 👤 사용자 인증 및 관리 모듈
+│   │   ├── build.gradle
+│   │   └── src/main/java/
+│   │       └── cloud/luigi99/solar/playground/user/
+│   │           ├── UserController.java
+│   │           ├── UserService.java
+│   │           ├── UserRepository.java
+│   │           ├── User.java         // Entity
+│   │           ├── dto/
+│   │           │   ├── UserInfo.java
+│   │           │   └── JwtToken.java
+│   │           ├── auth/             // 인증 관련 클래스
+│   │           │   ├── CustomOAuth2UserService.java
+│   │           │   ├── OAuth2SuccessHandler.java
+│   │           │   ├── JwtProvider.java
+│   │           │   └── JwtAuthenticationFilter.java
+│   │           └── package-info.java // Modulith 모듈 선언
+│   │
+│   ├── file/                         // 📁 파일 관리 모듈
+│   │   ├── build.gradle
+│   │   └── src/main/java/
+│   │       └── cloud/luigi99/solar/playground/file/
+│   │           ├── FileController.java
+│   │           ├── FileService.java
+│   │           ├── FileRepository.java
+│   │           ├── FileMetadata.java // Entity
+│   │           └── event/
+│   │               └── FileUploadedEvent.java
+│   │
+│   ├── document/                     // 🤖 AI 문서 처리 모듈
+│   │   ├── build.gradle
+│   │   └── src/main/java/
+│   │       └── cloud/luigi99/solar/playground/document/
+│   │           ├── DocumentProcessor.java
+│   │           ├── DocumentChunkRepository.java
+│   │           ├── DocumentChunk.java // Entity
+│   │           ├── client/           // 외부 API 클라이언트
+│   │           │   ├── UpstageClient.java
+│   │           │   └── GeminiClient.java
+│   │           └── package-info.java
+│   │
+│   └── chat/                         // 💬 채팅 및 RAG 모듈
+│       ├── build.gradle
+│       └── src/main/java/
+│           └── cloud/luigi99/solar/playground/chat/
+│               ├── ChatController.java
+│               ├── RAGPipelineService.java
+│               └── dto/
+│                   ├── ChatMessage.java
+│                   └── RagFlowState.java
 │
-├── user/                             // 👤 사용자 모듈
-│   ├── UserController.java
-│   ├── UserService.java
-│   ├── UserRepository.java
-│   ├── User.java                     // Entity
-│   ├── dto/
-│   │   ├── UserInfo.java
-│   │   └── JwtToken.java
-│   ├── auth/                         // 인증 관련 클래스
-│   │   ├── CustomOAuth2UserService.java
-│   │   ├── OAuth2SuccessHandler.java
-│   │   ├── JwtProvider.java
-│   │   └── JwtAuthenticationFilter.java
-│   └── package-info.java             // (Optional) Modulith 모듈 선언
+├── gradle/
+│   └── libs.versions.toml           // 의존성 버전 중앙 관리
 │
-├── file/                             // 📁 파일 관리 모듈
-│   ├── FileController.java
-│   ├── FileService.java
-│   ├── FileRepository.java
-│   ├── FileMetadata.java             // Entity
-│   └── event/
-│       └── FileUploadedEvent.java
-│
-├── document/                         // 🤖 AI 문서 처리 모듈
-│   ├── DocumentProcessor.java        // 이벤트 리스너, 처리 총괄
-│   ├── DocumentChunkRepository.java
-│   ├── DocumentChunk.java            // Entity (파싱된 텍스트 + 벡터)
-│   ├── client/                       // 외부 API 클라이언트
-│   │   ├── UpstageClient.java
-│   │   └── GeminiClient.java
-│   └── package-info.java
-│
-└── chat/                             // 💬 채팅 및 RAG 모듈
-    ├── ChatController.java           // WebSocket 컨트롤러
-    ├── RAGPipelineService.java       // RAG 파이프라인 로직
-    └── dto/
-        ├── ChatMessage.java
-        └── RagFlowState.java         // RAG 흐름 시각화용 DTO
+├── build.gradle                      // 루트 빌드 설정
+└── settings.gradle                   // 멀티 모듈 설정
 ```
+
+### 모듈 구성 원칙
+
+1. **물리적 분리**: 각 도메인은 독립된 Gradle 서브프로젝트로 분리
+2. **의존성 관리**: Version Catalog(`libs.versions.toml`)를 통한 중앙화된 버전 관리
+3. **모듈 간 통신**:
+   - 직접 의존성: `app` 모듈이 모든 도메인 모듈을 의존
+   - 이벤트 기반: Spring Modulith의 `ApplicationEvent`를 통한 느슨한 결합
+4. **빌드 아티팩트**:
+   - 각 모듈은 독립 JAR로 빌드
+   - `app` 모듈만 실행 가능한 Spring Boot JAR 생성 (필요시)
