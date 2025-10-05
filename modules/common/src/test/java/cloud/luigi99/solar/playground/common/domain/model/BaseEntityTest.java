@@ -1,6 +1,6 @@
 package cloud.luigi99.solar.playground.common.domain.model;
 
-import cloud.luigi99.solar.playground.common.infrastructure.config.JpaConfig;
+import cloud.luigi99.solar.playground.common.config.JpaConfig;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
