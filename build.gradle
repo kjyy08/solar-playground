@@ -1,15 +1,7 @@
 plugins {
-	id 'java'
-	alias(libs.plugins.spring.boot)
-	alias(libs.plugins.spring.dependency.management)
-}
-
-bootJar {
-    enabled = false
-}
-
-jar {
-    enabled = false
+    id 'java'
+    alias(libs.plugins.spring.boot) apply false
+    alias(libs.plugins.spring.dependency.management) apply false
 }
 
 subprojects {

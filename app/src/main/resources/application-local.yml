@@ -4,9 +4,9 @@ spring:
 
   # Database Configuration
   datasource:
-    url: jdbc:postgresql://localhost:5432/solar_playground
-    username: postgres
-    password: postgres
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   # JPA Configuration
@@ -19,11 +19,31 @@ spring:
         format_sql: true
     show-sql: true
 
-  # Thymeleaf Configuration
-  thymeleaf:
-    cache: false
-    prefix: classpath:/templates/
-    suffix: .html
+  # OAuth2 Configuration
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+            scope:
+              - read:user
+              - user:email
+        provider:
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+            user-info-uri: https://api.github.com/user
+            user-name-attribute: id
 
-server:
-  port: 8080
+# JWT Configuration
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  access-token-validity: 3600000  # 1 hour (milliseconds)
+  refresh-token-validity: 604800000  # 7 days (milliseconds)
+
+# Auth Configuration
+auth:
+  oauth2:
+    redirect-uri: ${AUTH_REDIRECT_URI}
