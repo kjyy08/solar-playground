@@ -3,6 +3,7 @@
 spring-boot = "3.5.6"
 spring-dependency-management = "1.1.7"
 spring-modulith = "1.2.0"
+lombok = "1.18.38"
 
 # Security & JWT
 jjwt = "0.12.6"
@@ -19,6 +20,7 @@ jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
 # Database
 postgresql = { module = "org.postgresql:postgresql" }
 pgvector = { module = "com.pgvector:pgvector", version.ref = "pgvector" }
+h2 = { module = "com.h2database:h2" }
 
 # Spring Boot Starters
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
@@ -28,10 +30,14 @@ spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-
 spring-boot-starter-thymeleaf = { module = "org.springframework.boot:spring-boot-starter-thymeleaf" }
 spring-boot-starter-websocket = { module = "org.springframework.boot:spring-boot-starter-websocket" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-boot-starter-aop = { module = "org.springframework.boot:spring-boot-starter-aop" }
 
 # Spring Modulith
 spring-modulith-starter-core = { module = "org.springframework.modulith:spring-modulith-starter-core" }
 spring-modulith-starter-test = { module = "org.springframework.modulith:spring-modulith-starter-test" }
+
+# Lombok
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 
 [bundles]
 jjwt = ["jjwt-api", "jjwt-impl", "jjwt-jackson"]
