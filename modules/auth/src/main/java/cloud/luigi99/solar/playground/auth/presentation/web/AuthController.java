@@ -4,6 +4,7 @@ import cloud.luigi99.solar.playground.auth.application.AuthUseCase;
 import cloud.luigi99.solar.playground.auth.domain.dto.TokenResponse;
 import cloud.luigi99.solar.playground.common.domain.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class AuthController {
     ) {
         String token = refreshToken.replace("Bearer ", "");
         TokenResponse tokenResponse = authUseCase.refreshToken(token);
-        return ResponseEntity.ok(ApiResponse.success(tokenResponse));
+        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK, tokenResponse));
     }
 
     /**
@@ -36,6 +37,6 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal String email) {
         authUseCase.logout(email);
-        return ResponseEntity.ok(ApiResponse.success(null));
+        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK, null));
     }
 }

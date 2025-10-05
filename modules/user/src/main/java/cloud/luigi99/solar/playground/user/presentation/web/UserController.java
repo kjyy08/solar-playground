@@ -1,9 +1,12 @@
 package cloud.luigi99.solar.playground.user.presentation.web;
 
 import cloud.luigi99.solar.playground.common.domain.dto.ApiResponse;
+import cloud.luigi99.solar.playground.common.domain.exception.BusinessException;
+import cloud.luigi99.solar.playground.common.domain.exception.ErrorCode;
 import cloud.luigi99.solar.playground.user.application.UserUseCase;
 import cloud.luigi99.solar.playground.user.domain.dto.UserDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -25,10 +28,9 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserDto>> getCurrentUser(
             @AuthenticationPrincipal String email
     ) {
-        return userUseCase.findByEmail(email)
-                .map(user -> ResponseEntity.ok(ApiResponse.success(user)))
-                .orElse(ResponseEntity.status(404)
-                        .body(ApiResponse.error("User not found")));
+        UserDto user = userUseCase.findByEmail(email)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK, user));
     }
 
     /**
@@ -36,9 +38,8 @@ public class UserController {
      */
     @GetMapping("/{userId}")
     public ResponseEntity<ApiResponse<UserDto>> getUserById(@PathVariable Long userId) {
-        return userUseCase.findById(userId)
-                .map(user -> ResponseEntity.ok(ApiResponse.success(user)))
-                .orElse(ResponseEntity.status(404)
-                        .body(ApiResponse.error("User not found")));
+        UserDto user = userUseCase.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK, user));
     }
 }

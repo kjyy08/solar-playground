@@ -1,64 +1,55 @@
 package cloud.luigi99.solar.playground.common.domain.dto;
 
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ApiResponseTest {
 
-    @Nested
-    class 성공_응답_생성 {
+    @Test
+    void 데이터와_HTTP_상태를_포함하는_ApiResponse를_생성한다() {
+        // given
+        String data = "test data";
+        HttpStatus httpStatus = HttpStatus.OK;
 
-        @Nested
-        class 데이터가_있는_경우 {
+        // when
+        ApiResponse<String> response = new ApiResponse<>(httpStatus, data);
 
-            @Test
-            void 데이터와_성공_상태를_포함하는_ApiResponse를_반환한다() {
-                // given
-                String data = "test data";
-
-                // when
-                ApiResponse<String> response = ApiResponse.success(data);
-
-                // then
-                assertThat(response.isSuccess()).isTrue();
-                assertThat(response.getData()).isEqualTo(data);
-                assertThat(response.getError()).isNull();
-            }
-        }
-
-        @Nested
-        class 데이터가_없는_경우 {
-
-            @Test
-            void 데이터는_null이고_성공_상태인_ApiResponse를_반환한다() {
-                // given & when
-                ApiResponse<?> response = ApiResponse.success();
-
-                // then
-                assertThat(response.isSuccess()).isTrue();
-                assertThat(response.getData()).isNull();
-                assertThat(response.getError()).isNull();
-            }
-        }
+        // then
+        assertThat(response.status()).isEqualTo(200);
+        assertThat(response.message()).isEqualTo("OK");
+        assertThat(response.data()).isEqualTo(data);
+        assertThat(response.timestamp()).isNotNull();
     }
 
-    @Nested
-    class 실패_응답_생성 {
+    @Test
+    void 데이터가_null인_ApiResponse를_생성한다() {
+        // given
+        HttpStatus httpStatus = HttpStatus.NO_CONTENT;
 
-        @Test
-        void 에러_메시지와_실패_상태를_포함하는_ApiResponse를_반환한다() {
-            // given
-            String errorMessage = "test error";
+        // when
+        ApiResponse<Void> response = new ApiResponse<>(httpStatus, null);
 
-            // when
-            ApiResponse<?> response = ApiResponse.error(errorMessage);
+        // then
+        assertThat(response.status()).isEqualTo(204);
+        assertThat(response.message()).isEqualTo("No Content");
+        assertThat(response.data()).isNull();
+        assertThat(response.timestamp()).isNotNull();
+    }
 
-            // then
-            assertThat(response.isSuccess()).isFalse();
-            assertThat(response.getData()).isNull();
-            assertThat(response.getError()).isEqualTo(errorMessage);
-        }
+    @Test
+    void CREATED_상태의_ApiResponse를_생성한다() {
+        // given
+        String data = "created resource";
+        HttpStatus httpStatus = HttpStatus.CREATED;
+
+        // when
+        ApiResponse<String> response = new ApiResponse<>(httpStatus, data);
+
+        // then
+        assertThat(response.status()).isEqualTo(201);
+        assertThat(response.message()).isEqualTo("Created");
+        assertThat(response.data()).isEqualTo(data);
     }
 }
