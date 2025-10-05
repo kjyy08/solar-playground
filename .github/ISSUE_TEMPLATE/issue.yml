@@ -1,0 +1,151 @@
+name: 이슈 생성
+description: Luigi Log Server 프로젝트의 모든 유형의 이슈를 생성합니다
+title: "[이슈유형] 제목을 입력하세요"
+labels: []
+assignees: []
+body:
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: 이슈 유형
+      description: 생성할 이슈의 유형을 선택하세요
+      options:
+        - 🐛 버그 (Bug)
+        - ✨ 기능요청 (Feature Request)
+        - 📖 사용자스토리 (User Story)
+        - 🔧 기술작업 (Technical Task)
+        - 🎯 에픽 (Epic)
+        - 🏗️ 인프라 (Infrastructure)
+      default: 0
+    validations:
+      required: true
+
+  - type: input
+    id: summary
+    attributes:
+      label: 요약
+      description: 이슈에 대한 간단한 요약을 입력하세요
+      placeholder: "예: 사용자 로그인 기능 구현"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 상세 설명
+      description: |
+        이슈에 대한 자세한 설명을 작성하세요.
+        - 버그: 현재 상황, 예상 결과, 실제 결과
+        - 기능: 기능의 목적과 상세 요구사항
+        - 사용자스토리: "~로서 나는 ~하고 싶다. 왜냐하면 ~"
+        - 기술작업: 기술적 배경과 구현 방향
+        - 에픽: 전체적인 목표와 하위 작업들
+        - 인프라: 인프라 변경 사유와 범위
+      placeholder: |
+        ## 배경
+        이 이슈가 필요한 배경을 설명하세요.
+
+        ## 요구사항
+        구체적인 요구사항을 나열하세요.
+
+        ## 추가 정보
+        참고할 만한 추가 정보가 있다면 작성하세요.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: 완료 조건 (Acceptance Criteria)
+      description: 이 이슈가 완료되었다고 판단할 수 있는 구체적인 조건들을 나열하세요
+      placeholder: |
+        - [ ] 조건 1
+        - [ ] 조건 2
+        - [ ] 조건 3
+        - [ ] 테스트 작성 완료
+        - [ ] 코드 리뷰 완료
+        - [ ] 문서 업데이트 완료
+    validations:
+      required: false
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: 의존성
+      description: 이 이슈와 관련된 다른 이슈들이나 외부 의존성이 있다면 나열하세요
+      placeholder: |
+        ## 선행 이슈
+        - #123 - JWT 인증 구현
+
+        ## 후속 이슈
+        - #124 - 사용자 권한 관리
+
+        ## 외부 의존성
+        - Spring Security 6.x 업그레이드 필요
+    validations:
+      required: false
+
+  - type: textarea
+    id: technical-notes
+    attributes:
+      label: 기술적 고려사항
+      description: |
+        기술작업이나 복잡한 구현이 필요한 경우, 기술적 접근 방법이나 고려사항을 작성하세요.
+      placeholder: |
+        ## 기술 스택
+        - Spring Boot 3.5.5
+        - Java 17
+        - PostgreSQL
+
+        ## 구현 방향
+        - 도메인 이벤트 사용
+        - 테스트 커버리지 80% 이상 유지
+
+        ## 성능 목표
+        - 응답시간 < 200ms
+        - 검색 성능 < 100ms
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 환경 정보 (버그의 경우)
+      description: 버그 리포트의 경우 발생한 환경 정보를 작성하세요
+      placeholder: |
+        ## 환경
+        - OS: Windows 11 / macOS / Linux
+        - Java Version: 21
+        - Spring Boot Version: 3.5.5
+        - Database: PostgreSQL 15
+
+        ## 재현 단계
+        1. 단계 1
+        2. 단계 2
+        3. 단계 3
+
+        ## 예상 결과
+        예상했던 동작을 설명하세요.
+
+        ## 실제 결과
+        실제로 발생한 문제를 설명하세요.
+
+        ## 스크린샷/로그
+        관련 스크린샷이나 로그를 첨부하세요.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 체크리스트
+      description: 이슈 생성 전 확인사항
+      options:
+        - label: 중복된 이슈가 없는지 확인했습니다
+          required: true
+        - label: 적절한 제목과 라벨을 설정했습니다
+          required: true
+        - label: 완료 조건이 명확하게 정의되었습니다
+          required: false
+        - label: 관련 문서를 검토했습니다 (docs/ 폴더)
+          required: false

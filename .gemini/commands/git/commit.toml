@@ -1,15 +1,14 @@
-# File: .gemini/commands/commit.toml
-description = "Create commit following project conventions"
+description = "프로젝트 규칙에 따라 커밋을 생성합니다."
 
 prompt = """
-# Create Commit
+# 커밋 생성
 
-Create a commit for current changes following project commit conventions.
+프로젝트의 커밋 규칙에 따라 현재 변경사항에 대한 커밋을 생성합니다.
 
-## User Input
-Issue Number: {{args}}
+## 사용자 입력
+이슈 번호: {{args}}
 
-## Commit Conventions
+## 커밋 규칙
 
 **형식**: `type: 설명 #Issue_Number` 또는 `type: 설명 - 세부사항(필요 시) #Issue_Number`
 
@@ -27,18 +26,18 @@ Issue Number: {{args}}
 - `ci`: CI 설정 변경
 - `cd`: CD 설정 변경
 
-## Context
+## 컨텍스트
 
-Git Status:
+Git 상태:
 !{git status}
 
-Changes:
+변경사항:
 !{git diff HEAD}
 
-Recent Commits:
+최근 커밋:
 !{git log --oneline -10}
 
-## Instructions
+## 지침
 
-Analyze changes and create appropriate commit message. Respond and work in Korean.
+변경사항을 분석하고 적절한 커밋 메시지를 생성하세요. 모든 응답과 작업은 한국어로 진행해야 합니다.
 """

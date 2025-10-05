@@ -1,18 +1,17 @@
-description = "Execute development workflow from issue"
+description = "이슈로부터 개발 워크플로우를 실행합니다."
 
 prompt = """
+# 개발자 작업 워크플로우
 
-# Development Task Workflow
+모든 기능 구현에 대해 이 개발 워크플로우를 따르세요. 모든 작업과 응답은 한국어로 진행해야 합니다.
 
-Follow this development workflow for all feature implementations. All work and responses must be in Korean.
+## 사용자 입력
+형식: /task <ISSUE_NUMBER> "<추가적인 지침>"
 
-## User Input
-Format: /task <issue_number> "<additional_instructions>"
-
-Provided Input:
+제공된 입력:
 {{args}}
 
-## Branch Rules
+## 브랜치 규칙
 **형식**: `type/brief-description`
 
 **브랜치 타입**:
@@ -28,42 +27,38 @@ Provided Input:
 - `bugfix/authentication-token-validation`
 - `hotfix/security-vulnerability-fix`
 
-## Development Workflow
+## 개발 워크플로우
 
-1. **Issue Analysis**
-    - Review GitHub issue #ISSUE_NUMBER requirements and acceptance criteria
-    - Understand the technical scope and dependencies
+1. **이슈 분석**
+    - GitHub 이슈 #ISSUE_NUMBER의 요구사항과 완료 조건을 검토합니다.
+    - 기술적 범위와 의존성을 이해합니다.
 
-2. **Branch Management**
-    - Create branches from `main` following project branch rules
-    - Use descriptive branch names that reflect the feature being implemented
+2. **브랜치 관리**
+    - 프로젝트 브랜치 규칙에 따라 `main`에서 브랜치를 생성합니다.
+    - 구현 중인 기능을 반영하는 서술적인 브랜치 이름을 사용합니다.
 
-3. **Development Process**
-    - Start development by updating GitHub project status to "In Progress"
-    - Proceed with development using @agents that are appropriate for the given situation
-    - Use Context7 tools. If Context7 is not available, provide guidance to the developer before starting development
+3. **개발 프로세스**
+    - @Context7 도구를 사용합니다. 만약 사용할 수 없는 경우, 개발 시작 전에 개발자에게 가이드를 제공합니다.
 
-4. **Developer Review (Pre-Commit)**
-    - **MANDATORY**: Present completed work to the developer for review before any commits
-    - Provide comprehensive summary of changes made:
-        - Files modified and new files created
-        - Key implementation decisions and rationale
-        - Test coverage and validation performed
-        - Architecture compliance verification
-    - Wait for developer approval before proceeding to commit stage
-    - Address any feedback or concerns raised during review
+4. **개발자 검토 (커밋 전)**
+    - **필수**: 커밋 전에 완료된 작업을 개발자에게 제시하여 검토를 받습니다.
+    - 변경된 내용에 대한 포괄적인 요약을 제공합니다:
+        - 수정된 파일 및 새로 생성된 파일
+        - 주요 구현 결정 및 근거
+        - 수행된 테스트 커버리지 및 검증
+        - 아키텍처 준수 확인
+    - 커밋 단계로 진행하기 전에 개발자 승인을 기다립니다.
+    - 검토 중 제기된 모든 피드백이나 우려 사항을 해결합니다.
 
-5. **Commit Standards** (After Developer Approval)
-    - Use github-manager agent
-    - Only proceed after receiving developer approval from step 4
+5. **커밋 표준** (개발자 승인 후)
+    - /git:commit <이슈_번호> 커스텀 명령어를 사용하여 변경사항을 커밋하세요.
+    - 4단계에서 개발자 승인을 받은 후에만 진행합니다.
 
-6. **Code Push**
-    - Push branches to remote repository
-    - Ensure all tests pass before pushing: `./gradlew test`
+6. **코드 푸시**
+    - 원격 저장소로 브랜치를 푸시합니다.
+    - 푸시하기 전에 모든 테스트가 통과하는지 확인합니다: `./gradlew test`
 
-7. **Pull Request Creation**
-    - Create PR with descriptive title matching commit convention
-    - Use team PR template(`.github/pull_request_template.md`): Follow the standardized PR template for consistent documentation
-    - Update GitHub project status to "In Review"
-
+7. **Pull Request 생성**
+    - 커밋 규칙과 일치하는 서술적인 제목으로 PR을 생성합니다.
+    - 팀 PR 템플릿(`.github/PULL_REQUEST_TEMPLATE.md`)을 사용합니다: 일관된 문서를 위해 표준화된 PR 템플릿을 따릅니다.
 """
