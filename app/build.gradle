@@ -4,6 +4,7 @@ bootJar {
 
 dependencies {
     implementation project(':modules:common')
+    implementation project(':modules:auth')
     implementation project(':modules:user')
     implementation project(':modules:file')
     implementation project(':modules:document')
@@ -12,6 +13,7 @@ dependencies {
     implementation libs.spring.boot.starter.web
     implementation libs.spring.boot.starter.thymeleaf
     implementation libs.spring.modulith.starter.core
+    implementation libs.spring.boot.starter.data.jpa
 
     runtimeOnly libs.postgresql
 

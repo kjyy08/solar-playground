@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    active: local
+  application:
+    name: solar-playground
+
+server:
+  port: 8080
