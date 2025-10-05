@@ -1,6 +1,6 @@
 package cloud.luigi99.solar.playground.auth.presentation.web;
 
-import cloud.luigi99.solar.playground.auth.application.AuthService;
+import cloud.luigi99.solar.playground.auth.application.AuthUseCase;
 import cloud.luigi99.solar.playground.auth.domain.dto.TokenResponse;
 import cloud.luigi99.solar.playground.common.domain.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthService authService;
+    private final AuthUseCase authUseCase;
 
     /**
      * Refresh Token을 사용하여 새로운 Access Token 발급
@@ -26,7 +26,7 @@ public class AuthController {
             @RequestHeader("Authorization") String refreshToken
     ) {
         String token = refreshToken.replace("Bearer ", "");
-        TokenResponse tokenResponse = authService.refreshToken(token);
+        TokenResponse tokenResponse = authUseCase.refreshToken(token);
         return ResponseEntity.ok(ApiResponse.success(tokenResponse));
     }
 
@@ -35,7 +35,7 @@ public class AuthController {
      */
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal String email) {
-        authService.logout(email);
+        authUseCase.logout(email);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

@@ -1,6 +1,6 @@
 package cloud.luigi99.solar.playground.auth.infrastructure.security;
 
-import cloud.luigi99.solar.playground.auth.application.AuthService;
+import cloud.luigi99.solar.playground.auth.application.AuthUseCase;
 import cloud.luigi99.solar.playground.auth.domain.dto.TokenResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +23,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final AuthService authService;
+    private final AuthUseCase authUseCase;
 
     @Value("${auth.oauth2.redirect-uri:http://localhost:8080/login/success}")
     private String redirectUri;
@@ -45,7 +45,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         }
 
         // JWT 토큰 생성 및 Refresh Token 저장
-        TokenResponse tokenResponse = authService.createTokens(email);
+        TokenResponse tokenResponse = authUseCase.createTokens(email);
 
         log.info("JWT tokens generated for user: {}", email);
 

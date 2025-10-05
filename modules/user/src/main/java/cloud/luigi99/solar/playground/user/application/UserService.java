@@ -14,12 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 /**
- * 사용자 관리 서비스
+ * 사용자 관리 서비스 구현체
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserUseCase {
 
     private final UserRepository userRepository;
     private final ApplicationEventPublisher eventPublisher;

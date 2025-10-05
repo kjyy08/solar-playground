@@ -13,12 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 /**
- * 인증 관련 비즈니스 로직을 처리하는 서비스
+ * 인증 관련 비즈니스 로직을 처리하는 서비스 구현체
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class AuthService implements AuthUseCase {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;

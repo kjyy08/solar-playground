@@ -1,7 +1,7 @@
 package cloud.luigi99.solar.playground.user.presentation.event;
 
 import cloud.luigi99.solar.playground.auth.domain.event.UserAuthenticationRequestedEvent;
-import cloud.luigi99.solar.playground.user.application.UserService;
+import cloud.luigi99.solar.playground.user.application.UserUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -17,14 +17,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserAuthenticationEventListener {
 
-    private final UserService userService;
+    private final UserUseCase userUseCase;
 
     @EventListener
     @Transactional
     public void onUserAuthenticated(UserAuthenticationRequestedEvent event) {
         log.info("Received UserAuthenticationRequestedEvent for email: {}", event.email());
 
-        userService.createOrUpdateUser(
+        userUseCase.createOrUpdateUser(
                 event.email(),
                 event.name(),
                 event.profileImageUrl(),
