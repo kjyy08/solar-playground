@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(${title}, ~{::section})}">
+<head>
+    <title th:text="${title} + ' - Solar Playground'">Chat - Solar Playground</title>
+</head>
+<body>
+    <section>
+        <div class="chat-container">
+            <!-- Chat History Sidebar -->
+            <div class="chat-history-sidebar" id="chatHistorySidebar">
+                <div class="chat-history-header">
+                    <h5>Chat History</h5>
+                    <button class="btn btn-sm btn-primary" id="newChatBtn">
+                        <i class="bi bi-plus-lg"></i>
+                        New Chat
+                    </button>
+                </div>
+                <div class="chat-history-list" id="chatHistoryList">
+                    <div class="empty-state-small">
+                        <i class="bi bi-chat-dots"></i>
+                        <p>No chat history</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="chat-main">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="welcome-message">
+                        <i class="bi bi-sun"></i>
+                        <h3>Solar Pro 2에게 질문해보세요</h3>
+                        <p>업로드한 문서를 기반으로 정확한 답변을 제공합니다</p>
+                    </div>
+                </div>
+
+                <div class="chat-input-container">
+                    <!-- Attached Files Preview -->
+                    <div class="attached-files-preview" id="attachedFilesPreview" style="display: none;"></div>
+
+                    <form id="chatForm" class="chat-input-form">
+                        <input type="file" id="fileAttachInput" class="d-none" multiple accept=".pdf,.docx,.txt,.md,.png,.jpg,.jpeg">
+                        <button type="button" class="btn btn-outline-secondary chat-attach-btn" id="attachFileBtn">
+                            <i class="bi bi-paperclip"></i>
+                        </button>
+                        <input type="text"
+                               id="messageInput"
+                               class="form-control chat-input"
+                               placeholder="메시지를 입력하세요..."
+                               autocomplete="off">
+                        <button type="submit" class="btn btn-primary chat-send-btn">
+                            <i class="bi bi-send-fill"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- RAG Pipeline Panel -->
+            <div class="pipeline-panel" id="pipelinePanel">
+                <div class="pipeline-header">
+                    <h5>RAG Pipeline</h5>
+                    <button class="btn btn-sm btn-link" id="togglePipeline">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="pipeline-content">
+                    <div class="pipeline-step" data-step="embedding">
+                        <div class="step-icon">
+                            <i class="bi bi-diagram-3"></i>
+                        </div>
+                        <div class="step-content">
+                            <h6>Query Embedding</h6>
+                            <p class="step-status">대기 중</p>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-step" data-step="search">
+                        <div class="step-icon">
+                            <i class="bi bi-search"></i>
+                        </div>
+                        <div class="step-content">
+                            <h6>Similarity Search</h6>
+                            <p class="step-status">대기 중</p>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-step" data-step="generation">
+                        <div class="step-icon">
+                            <i class="bi bi-cpu"></i>
+                        </div>
+                        <div class="step-content">
+                            <h6>Answer Generation</h6>
+                            <p class="step-status">대기 중</p>
+                        </div>
+                    </div>
+
+                    <!-- Context Documents -->
+                    <div class="context-section mt-3">
+                        <h6>참조 문서</h6>
+                        <div id="contextDocs" class="context-docs">
+                            <p class="text-muted small">검색된 문서가 여기에 표시됩니다</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SockJS & STOMP for WebSocket -->
+        <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+        <script th:src="@{/js/chat.js}"></script>
+        <script th:src="@{/js/pipeline.js}"></script>
+
+        <script>
+            // Initialize chat and setup event listeners
+            document.addEventListener('DOMContentLoaded', function() {
+                // File attach button
+                const attachFileBtn = document.getElementById('attachFileBtn');
+                const fileAttachInput = document.getElementById('fileAttachInput');
+
+                if (attachFileBtn && fileAttachInput) {
+                    attachFileBtn.addEventListener('click', function() {
+                        fileAttachInput.click();
+                    });
+
+                    fileAttachInput.addEventListener('change', function(e) {
+                        handleFileAttach(e.target.files);
+                    });
+                }
+
+                // Toggle pipeline panel
+                const togglePipelineBtn = document.getElementById('togglePipeline');
+                const pipelinePanel = document.getElementById('pipelinePanel');
+
+                if (togglePipelineBtn && pipelinePanel) {
+                    togglePipelineBtn.addEventListener('click', function() {
+                        pipelinePanel.classList.toggle('active');
+                        const icon = this.querySelector('i');
+                        if (icon) {
+                            icon.classList.toggle('bi-chevron-right');
+                            icon.classList.toggle('bi-chevron-left');
+                        }
+                    });
+                }
+
+                // Initialize chat
+                if (typeof initializeChat === 'function') {
+                    initializeChat();
+                }
+            });
+
+            // Handle file attachment
+            let attachedFiles = [];
+
+            function handleFileAttach(files) {
+                const preview = document.getElementById('attachedFilesPreview');
+
+                Array.from(files).forEach(file => {
+                    attachedFiles.push(file);
+
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'attached-file-item';
+                    fileItem.innerHTML = `
+                        <i class="bi bi-file-earmark"></i>
+                        <span>${file.name}</span>
+                        <button type="button" class="attached-file-remove" onclick="removeAttachedFile('${file.name}')">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    `;
+
+                    preview.appendChild(fileItem);
+                });
+
+                if (attachedFiles.length > 0) {
+                    preview.style.display = 'block';
+                }
+
+                // Clear input
+                document.getElementById('fileAttachInput').value = '';
+            }
+
+            function removeAttachedFile(fileName) {
+                attachedFiles = attachedFiles.filter(f => f.name !== fileName);
+
+                const preview = document.getElementById('attachedFilesPreview');
+                const items = preview.querySelectorAll('.attached-file-item');
+
+                items.forEach(item => {
+                    if (item.textContent.includes(fileName)) {
+                        item.remove();
+                    }
+                });
+
+                if (attachedFiles.length === 0) {
+                    preview.style.display = 'none';
+                }
+            }
+
+            // Make function globally available
+            window.removeAttachedFile = removeAttachedFile;
+        </script>
+    </section>
+</body>
+</html>

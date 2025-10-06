@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(${title}, ~{::section})}">
+<head>
+    <title th:text="${title} + ' - Solar Playground'">Profile - Solar Playground</title>
+</head>
+<body>
+    <section>
+        <div class="profile-container">
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <div class="profile-avatar-section">
+                    <img src="https://via.placeholder.com/120" alt="User Avatar" class="profile-avatar" id="profileAvatar">
+                    <button class="btn btn-sm btn-outline-primary mt-2">
+                        <i class="bi bi-camera"></i>
+                        사진 변경
+                    </button>
+                </div>
+                <div class="profile-info">
+                    <h2 id="profileName">사용자</h2>
+                    <p class="text-muted" id="profileEmail">user@example.com</p>
+                    <span class="badge bg-success">활성</span>
+                </div>
+            </div>
+
+            <!-- Profile Content -->
+            <div class="row mt-4">
+                <!-- User Information -->
+                <div class="col-md-8">
+                    <div class="card profile-card">
+                        <div class="card-header">
+                            <h5>사용자 정보</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <strong>이름</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    <span id="userName">-</span>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <strong>이메일</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    <span id="userEmail">-</span>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <strong>가입일</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    <span id="createdAt">-</span>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-4">
+                                    <strong>최근 로그인</strong>
+                                </div>
+                                <div class="col-sm-8">
+                                    <span id="lastLogin">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Usage Statistics -->
+                    <div class="card profile-card mt-3">
+                        <div class="card-header">
+                            <h5>사용 통계</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="stat-box">
+                                        <h3 id="totalChats">0</h3>
+                                        <p class="text-muted">총 대화</p>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-box">
+                                        <h3 id="totalFiles">0</h3>
+                                        <p class="text-muted">업로드 파일</p>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-box">
+                                        <h3 id="totalTokens">0</h3>
+                                        <p class="text-muted">사용 토큰</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings & Actions -->
+                <div class="col-md-4">
+                    <!-- Account Settings -->
+                    <div class="card profile-card">
+                        <div class="card-header">
+                            <h5>설정</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary" disabled>
+                                    <i class="bi bi-gear"></i>
+                                    계정 설정
+                                </button>
+                                <button class="btn btn-outline-primary" disabled>
+                                    <i class="bi bi-shield-lock"></i>
+                                    보안 설정
+                                </button>
+                                <button class="btn btn-outline-primary" disabled>
+                                    <i class="bi bi-bell"></i>
+                                    알림 설정
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Logout Section -->
+                    <div class="card profile-card mt-3">
+                        <div class="card-header">
+                            <h5>계정 관리</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <form th:action="@{/logout}" method="post">
+                                    <button type="submit" class="btn btn-danger w-100">
+                                        <i class="bi bi-box-arrow-right"></i>
+                                        로그아웃
+                                    </button>
+                                </form>
+                                <button class="btn btn-outline-danger" disabled>
+                                    <i class="bi bi-trash"></i>
+                                    계정 삭제
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Load user profile
+            async function loadUserProfile() {
+                try {
+                    // TODO: Replace with actual API endpoint when available
+                    // const response = await axios.get('/api/v1/users/me');
+                    // const user = response.data;
+
+                    // Sample data for demonstration
+                    const user = {
+                        name: '사용자',
+                        email: 'user@example.com',
+                        avatar: 'https://via.placeholder.com/120',
+                        createdAt: '2024-01-01',
+                        lastLogin: '2024-10-06',
+                        stats: {
+                            chats: 0,
+                            files: 0,
+                            tokens: 0
+                        }
+                    };
+
+                    // Update UI
+                    document.getElementById('profileName').textContent = user.name;
+                    document.getElementById('profileEmail').textContent = user.email;
+                    document.getElementById('profileAvatar').src = user.avatar;
+                    document.getElementById('userName').textContent = user.name;
+                    document.getElementById('userEmail').textContent = user.email;
+                    document.getElementById('createdAt').textContent = user.createdAt;
+                    document.getElementById('lastLogin').textContent = user.lastLogin;
+                    document.getElementById('totalChats').textContent = user.stats.chats;
+                    document.getElementById('totalFiles').textContent = user.stats.files;
+                    document.getElementById('totalTokens').textContent = user.stats.tokens;
+
+                } catch (error) {
+                    console.error('Failed to load user profile:', error);
+                }
+            }
+
+            // Initialize profile page
+            document.addEventListener('DOMContentLoaded', function() {
+                loadUserProfile();
+            });
+        </script>
+    </section>
+</body>
+</html>
