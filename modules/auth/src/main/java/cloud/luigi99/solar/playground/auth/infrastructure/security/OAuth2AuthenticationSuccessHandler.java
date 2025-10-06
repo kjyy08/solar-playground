@@ -2,6 +2,7 @@ package cloud.luigi99.solar.playground.auth.infrastructure.security;
 
 import cloud.luigi99.solar.playground.auth.application.AuthUseCase;
 import cloud.luigi99.solar.playground.auth.domain.dto.TokenResponse;
+import cloud.luigi99.solar.playground.auth.infrastructure.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 
@@ -24,8 +24,9 @@ import java.io.IOException;
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final AuthUseCase authUseCase;
+    private final CookieUtil cookieUtil;
 
-    @Value("${auth.oauth2.redirect-uri:http://localhost:8080/login/success}")
+    @Value("${auth.oauth2.redirect-uri:/dashboard}")
     private String redirectUri;
 
     @Override
@@ -35,27 +36,40 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             Authentication authentication
     ) throws IOException {
 
+        log.info("OAuth2 authentication success handler called");
+
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         String email = oAuth2User.getAttribute("email");
 
+        log.info("OAuth2User attributes: {}", oAuth2User.getAttributes());
+        log.info("Email from OAuth2User: {}", email);
+
         if (email == null) {
             log.error("Email not found in OAuth2User attributes");
-            getRedirectStrategy().sendRedirect(request, response, "/login?error");
+            getRedirectStrategy().sendRedirect(request, response, "/login?error=no_email");
             return;
         }
 
-        // JWT 토큰 생성 및 Refresh Token 저장
-        TokenResponse tokenResponse = authUseCase.createTokens(email);
+        try {
+            // JWT 토큰 생성 및 Refresh Token 저장
+            TokenResponse tokenResponse = authUseCase.createTokens(email);
 
-        log.info("JWT tokens generated for user: {}", email);
+            log.info("JWT tokens generated for user: {}", email);
 
-        // 토큰을 쿼리 파라미터로 전달 (프론트엔드에서 처리)
-        String targetUrl = UriComponentsBuilder.fromUriString(redirectUri)
-                .queryParam("accessToken", tokenResponse.accessToken())
-                .queryParam("refreshToken", tokenResponse.refreshToken())
-                .build()
-                .toUriString();
+            // 쿠키에 토큰 저장
+            response.addCookie(cookieUtil.createAccessTokenCookie(tokenResponse.accessToken()));
+            response.addCookie(cookieUtil.createRefreshTokenCookie(tokenResponse.refreshToken()));
 
-        getRedirectStrategy().sendRedirect(request, response, targetUrl);
+            log.info("Cookies added to response. Redirecting to: {}", redirectUri);
+
+            // 대시보드로 리다이렉트
+            getRedirectStrategy().sendRedirect(request, response, redirectUri);
+
+            log.info("Redirect completed successfully");
+
+        } catch (Exception e) {
+            log.error("Error during OAuth2 authentication success handling", e);
+            getRedirectStrategy().sendRedirect(request, response, "/login?error=token_creation_failed");
+        }
     }
 }
