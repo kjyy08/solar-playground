@@ -47,3 +47,5 @@ jwt:
 auth:
   oauth2:
     redirect-uri: ${AUTH_REDIRECT_URI}
+  cookie:
+    secure: false
